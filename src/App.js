@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import HomePage from './pages/homepage/homepage.component';
+import ShopPage from './pages/shop/shop.component';
 import { Route, Routes } from "react-router";
 import { Link, useLocation } from 'react-router-dom';
 
@@ -35,7 +36,7 @@ function App() {
     <div>
       <Routes>
         <Route exact path='/' element={<HomePage/>}/>
-        <Route path='/hats' element={<HatsPage/>} />
+        <Route path='/shop' element={<ShopPage/>} />
       </Routes>
       {/* <Routes>
         <Route exact path="/" element={<HomePageDemo/>} />
