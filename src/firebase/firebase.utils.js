@@ -40,7 +40,7 @@ export const createUserProfileDocument = async (userAuth, additionalData) => {
     }
   }
 
-  return userDoc;
+  return userRef;
 };
 
 const provider = new GoogleAuthProvider();
