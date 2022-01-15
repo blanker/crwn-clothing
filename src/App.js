@@ -3,7 +3,7 @@ import './App.css';
 import HomePage from './pages/homepage/homepage.component';
 import ShopPage from './pages/shop/shop.component';
 import CheckOutPage from './pages/checkout/checkout.component';
-import { Route, Routes, Navigate, useHistory } from 'react-router-dom';
+import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import Header from './components/header/header.component';
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
 import { auth, createUserProfileDocument, firestore } from './firebase/firebase.utils';
@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 import { setCurrentUser } from './redux/user/user.actions';
 import { selectCurrentUser } from './redux/user/user.selectors';
 import { createStructuredSelector } from 'reselect';
+import CollectionPage from './components/collection/collection.component';
 class App extends React.Component {
     unsubscribeFromAuth = null;
 
@@ -43,17 +44,32 @@ class App extends React.Component {
       <div>
         <Header />
         <Routes>
-          <Route exact path='/' element={<HomePage/>}/>
-          <Route path='/shop' element={<ShopPage/>} />
-          <Route exact path='/checkout' element={<CheckOutPage/>} />
-          <Route exact path='/signin' element={
-            this.props.currentUser
-            ? <Navigate to='/'/>
-            : <SignInAndSignUpPage />
-          } 
-
-          />
+          <Route path="/" element={<HomePage />} />
+          <Route path="shop" element={<><ShopPage /><Outlet/></>}>
+            
+          </Route>
+          <Route path="shop/:collectionId" element={<CollectionPage />} />
+          <Route path='checkout' element={<CheckOutPage />} />
+          <Route path='signin' element={
+              this.props.currentUser
+              ? <Navigate to='/'/>
+              : <SignInAndSignUpPage />
+              } 
+          /> 
         </Routes>
+        
+        {/* <Routes>
+          <Route path='/' element={<HomePage />} />
+          <Route path='/shop/*' element={<ShopPage />} />
+          <Route path='/checkout' element={<CheckOutPage/>} />
+          <Route path='/signin' element={
+              this.props.currentUser
+              ? <Navigate to='/'/>
+              : <SignInAndSignUpPage />
+              } 
+          />  
+          
+        </Routes> */}
       </div>
     );
   }

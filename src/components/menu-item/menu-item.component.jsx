@@ -5,8 +5,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 const MenuItem = ({ title, imageUrl, size, linkUrl }) => {
     const navigate = useNavigate();
     const location = useLocation();
-    console.log('navigate', navigate);
-    console.log('location', location);
     return (
         <div
             className={`menu-item ${size}`}
