@@ -1,20 +1,19 @@
 import React from "react";
-import { Routes, Route, Outlet } from "react-router-dom";
 import CollectionsOverview from '../../components/collections-overview/collections-overview.component';
-import CollectionPage from "../../components/collection/collection.component";
+import WithSpinner from "../../components/with-spinner/with-spinner.component";
 
-const ShopPage = () => {
+const CollectionsOverviewWithSpinner = WithSpinner(CollectionsOverview);
+const ShopPage = ({loading}) => {
     
     return (
         <div className="shop-page">
-            <CollectionsOverview />
+            <CollectionsOverviewWithSpinner isLoading={loading} />
 
             {/* <Routes>
                 <Route path=":categoryId" element={<Category />} />
             </Routes>
             <Outlet /> */}
         </div>
-        
     );
 };
 
