@@ -1,18 +1,11 @@
 import React from "react";
-import CollectionsOverview from '../../components/collections-overview/collections-overview.component';
-import WithSpinner from "../../components/with-spinner/with-spinner.component";
+import CollectionsOverviewContainer from "../../components/collections-overview/collections-overview.container";
 
-const CollectionsOverviewWithSpinner = WithSpinner(CollectionsOverview);
-const ShopPage = ({loading}) => {
+const ShopPage = () => {
     
     return (
         <div className="shop-page">
-            <CollectionsOverviewWithSpinner isLoading={loading} />
-
-            {/* <Routes>
-                <Route path=":categoryId" element={<Category />} />
-            </Routes>
-            <Outlet /> */}
+            <CollectionsOverviewContainer />
         </div>
     );
 };

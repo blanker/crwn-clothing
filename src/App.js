@@ -6,27 +6,22 @@ import CheckOutPage from './pages/checkout/checkout.component';
 import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import Header from './components/header/header.component';
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
-import { auth, createUserProfileDocument, firestore, convertCollectionsSnapshotToMap } from './firebase/firebase.utils';
-import { collection, onSnapshot, getDocs } from 'firebase/firestore';
+import { auth, createUserProfileDocument } from './firebase/firebase.utils';
+import {  onSnapshot } from 'firebase/firestore';
 import { connect } from 'react-redux';
 import { setCurrentUser } from './redux/user/user.actions';
 import { selectCurrentUser } from './redux/user/user.selectors';
 import { createStructuredSelector } from 'reselect';
-import CollectionPage from './components/collection/collection.component';
+import CollectionsContainer from './components/collection/collection.container';
 import { selectCollectionsForPreview } from './redux/shop/shop.selectors';
-import WithSpinner from './components/with-spinner/with-spinner.component';
-import { updateCollections } from './redux/shop/shop.actions';
+import { fetchCollectionsStartAsync } from './redux/shop/shop.actions';
 
-const CollectionPageWithSpinner = WithSpinner(CollectionPage);
 class App extends React.Component {
-  state = {
-      loading: true
-  }
+  
   unsubscribeFromAuth = null;
-  unsubscribeFromSnapshot = null;
 
   componentDidMount() {
-    const { setCurrentUser, updateCollections } = this.props;
+    const { setCurrentUser, fetchCollectionsStartAsync} = this.props;
 
     this.unsubscribeFromAuth = auth.onAuthStateChanged(async user => {
       if (user) {
@@ -38,45 +33,28 @@ class App extends React.Component {
             ...userSnapshot.data()
           });
         });
-      } 
+      }
 
       setCurrentUser(user);
-      // 添加shop data
-      // addCollectionAndDocuments('collections',
-      //   collectionsArray.map(({ title, items }) => ({ title, items })));
-    })
+    });
 
+    fetchCollectionsStartAsync();
 
-    const collectonsRef = collection(firestore, 'collections');
-    // this.unsubscribeFromSnapshot = onSnapshot(collectonsRef, collectionsSnapshot => {
-    //   const collectionMap = convertCollectionsSnapshotToMap(collectionsSnapshot);
-    //   updateCollections(collectionMap);
-    //   this.setState({ ...this.state, loading: false })
-    // });
-
-    getDocs(collectonsRef)
-      .then(collectionsSnapshot => {
-        const collectionMap = convertCollectionsSnapshotToMap(collectionsSnapshot);
-        updateCollections(collectionMap);
-        this.setState({ ...this.state, loading: false })
-      });
   }
 
   componentWillUnmount() {
     this.unsubscribeFromAuth();
-    if (this.unsubscribeFromSnapshot) this.unsubscribeFromSnapshot();
   }
 
   render() {
-    
     return (
       <div>
         <Header />
         <Routes>
           <Route path="/" element={<HomePage />} />
-          <Route path="shop" element={<><ShopPage loading={this.state.loading} /><Outlet/></>}>
+          <Route path="shop" element={<><ShopPage /><Outlet/></>}>
           </Route>
-          <Route path="shop/:collectionId" element={<CollectionPageWithSpinner isLoading={this.state.loading} />} />
+          <Route path="shop/:collectionId" element={<CollectionsContainer />} />
           <Route path='checkout' element={<CheckOutPage />} />
           <Route path='signin' element={
               this.props.currentUser
@@ -86,18 +64,6 @@ class App extends React.Component {
           /> 
         </Routes>
         
-        {/* <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='/shop/*' element={<ShopPage />} />
-          <Route path='/checkout' element={<CheckOutPage/>} />
-          <Route path='/signin' element={
-              this.props.currentUser
-              ? <Navigate to='/'/>
-              : <SignInAndSignUpPage />
-              } 
-          />  
-          
-        </Routes> */}
       </div>
     );
   }
@@ -110,7 +76,7 @@ const mapStateToProps = createStructuredSelector({
 
 const mapDispatchToProps = dispatch => ({
   setCurrentUser: user => dispatch(setCurrentUser(user)),
-  updateCollections: collectionsMap => dispatch(updateCollections(collectionsMap))
+  fetchCollectionsStartAsync: () => dispatch(fetchCollectionsStartAsync())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
