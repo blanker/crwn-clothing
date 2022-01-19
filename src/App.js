@@ -6,44 +6,20 @@ import CheckOutPage from './pages/checkout/checkout.component';
 import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import Header from './components/header/header.component';
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
-import { auth, createUserProfileDocument } from './firebase/firebase.utils';
-import {  onSnapshot } from 'firebase/firestore';
 import { connect } from 'react-redux';
-import { setCurrentUser } from './redux/user/user.actions';
 import { selectCurrentUser } from './redux/user/user.selectors';
 import { createStructuredSelector } from 'reselect';
 import CollectionsContainer from './components/collection/collection.container';
 import { selectCollectionsForPreview } from './redux/shop/shop.selectors';
-import { fetchCollectionsStartAsync } from './redux/shop/shop.actions';
+import { fetchCollectionsStart } from "./redux/shop/shop.actions";
+import { checkUserSession } from './redux/user/user.actions';
 
 class App extends React.Component {
   
-  unsubscribeFromAuth = null;
-
   componentDidMount() {
-    const { setCurrentUser, fetchCollectionsStartAsync} = this.props;
-
-    this.unsubscribeFromAuth = auth.onAuthStateChanged(async user => {
-      if (user) {
-        const userDocRef = await createUserProfileDocument(user);
-        onSnapshot(userDocRef, userSnapshot => {
-          console.log('userSnapshot onSnapshot: ', userSnapshot);
-          setCurrentUser({
-            id: userSnapshot.id,
-            ...userSnapshot.data()
-          });
-        });
-      }
-
-      setCurrentUser(user);
-    });
-
-    fetchCollectionsStartAsync();
-
-  }
-
-  componentWillUnmount() {
-    this.unsubscribeFromAuth();
+    const { fetchCollectionsStart, checkUserSession} = this.props;
+    fetchCollectionsStart();
+    checkUserSession();
   }
 
   render() {
@@ -75,8 +51,8 @@ const mapStateToProps = createStructuredSelector({
 });
 
 const mapDispatchToProps = dispatch => ({
-  setCurrentUser: user => dispatch(setCurrentUser(user)),
-  fetchCollectionsStartAsync: () => dispatch(fetchCollectionsStartAsync())
+  fetchCollectionsStart: () => dispatch(fetchCollectionsStart()),
+  checkUserSession: () => dispatch(checkUserSession())
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
