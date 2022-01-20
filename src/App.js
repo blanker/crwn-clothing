@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
 import HomePage from './pages/homepage/homepage.component';
 import ShopPage from './pages/shop/shop.component';
@@ -14,35 +14,32 @@ import { selectCollectionsForPreview } from './redux/shop/shop.selectors';
 import { fetchCollectionsStart } from "./redux/shop/shop.actions";
 import { checkUserSession } from './redux/user/user.actions';
 
-class App extends React.Component {
+const App = ( { currentUser, fetchCollectionsStart, checkUserSession} ) => {
   
-  componentDidMount() {
-    const { fetchCollectionsStart, checkUserSession} = this.props;
+  useEffect(() => {
     fetchCollectionsStart();
     checkUserSession();
-  }
+  }, [checkUserSession, fetchCollectionsStart]);
 
-  render() {
-    return (
-      <div>
-        <Header />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="shop" element={<><ShopPage /><Outlet/></>}>
-          </Route>
-          <Route path="shop/:collectionId" element={<CollectionsContainer />} />
-          <Route path='checkout' element={<CheckOutPage />} />
-          <Route path='signin' element={
-              this.props.currentUser
-              ? <Navigate to='/'/>
-              : <SignInAndSignUpPage />
-              } 
-          /> 
-        </Routes>
-        
-      </div>
-    );
-  }
+  return (
+    <div>
+      <Header />
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="shop" element={<><ShopPage /><Outlet/></>}>
+        </Route>
+        <Route path="shop/:collectionId" element={<CollectionsContainer />} />
+        <Route path='checkout' element={<CheckOutPage />} />
+        <Route path='signin' element={
+            currentUser
+            ? <Navigate to='/'/>
+            : <SignInAndSignUpPage />
+            } 
+        /> 
+      </Routes>
+      
+    </div>
+  );
 }
 
 const mapStateToProps = createStructuredSelector({
