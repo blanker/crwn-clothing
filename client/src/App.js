@@ -6,20 +6,21 @@ import CheckOutPage from './pages/checkout/checkout.component';
 import { Route, Routes, Navigate, Outlet } from 'react-router-dom';
 import Header from './components/header/header.component';
 import SignInAndSignUpPage from './pages/sign-in-and-sign-up/sign-in-and-sign-up.component';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectCurrentUser } from './redux/user/user.selectors';
-import { createStructuredSelector } from 'reselect';
 import CollectionsContainer from './components/collection/collection.container';
-import { selectCollectionsForPreview } from './redux/shop/shop.selectors';
 import { fetchCollectionsStart } from "./redux/shop/shop.actions";
 import { checkUserSession } from './redux/user/user.actions';
 
-const App = ( { currentUser, fetchCollectionsStart, checkUserSession} ) => {
-  
+const App = (  ) => {
+  const currentUser = useSelector(selectCurrentUser);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    fetchCollectionsStart();
-    checkUserSession();
-  }, [checkUserSession, fetchCollectionsStart]);
+    // fetchCollectionsStart();
+    dispatch(checkUserSession());
+    dispatch(fetchCollectionsStart());
+  }, [dispatch]);
 
   return (
     <div>
@@ -42,14 +43,5 @@ const App = ( { currentUser, fetchCollectionsStart, checkUserSession} ) => {
   );
 }
 
-const mapStateToProps = createStructuredSelector({
-  currentUser: selectCurrentUser,
-  collectionsArray: selectCollectionsForPreview
-});
 
-const mapDispatchToProps = dispatch => ({
-  fetchCollectionsStart: () => dispatch(fetchCollectionsStart()),
-  checkUserSession: () => dispatch(checkUserSession())
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(App);
+export default App;
